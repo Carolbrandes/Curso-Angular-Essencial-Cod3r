@@ -1,0 +1,196 @@
+1) Para instalar o angular: npm i -g @angular/cli
+2) Para criar a aplicação: ng new minha-app
+    obs: se quiser que o prefixo seja diferente de app,
+    ng new minha-app --prefix nomeprefixo
+
+3) inicialização da app:
+    1º) main.ts
+    2º) AppModule - modulo que vai iniciar a app, dentro dele vai ter um atributo bootstrap que é inicializar, e ele vai apontar para o AppComponent. E a partir do AppComponent toda arvore de componentes será "chamada".
+
+4) para referenciar os componentes (por padrão) usamos uma tag personalizada com prefixo app e o nome do componente. Ex: <app-home></app-home>
+
+5) a partir do arquivo ts, é que os arquivos html e css serão encontrados
+
+6) dentro de um arquivo module vamos ter os atributos: declarations, imports, exports, providers e bootstrap.
+
+7) quando criamos o projeto angular com a flag minimal, no arquivo angular.json temos configurações e para termos arquivos para html, css e ts separados em arquivos diferentes vamos alterar as propriedades "inlineTemplate" e "inlineStyle" para false.
+
+8) Na pasta assets colocamos imagens, fontes
+
+9) Na pasta environments declaramos as variaveis de ambiente
+
+10) para instalar o material design: ng add @angular/material
+
+11) Para criar um novo componente: ng g c caminhopasta. ex: ng g c components/template/header para criar o componente header
+
+12) Diretiva de atributo: altera a aparencia e o comportamento de um elemento, componente ou outra diretiva. 
+
+13) Diretiva estrutural: altera o layout add ou removendo elementos da DOM.
+
+14) Decorator: é um padrão de projeto que tem como objetivo evitar a utilização de herança e trab com composição (estender um objeto). Os decorators são representados com @... que o angular usa para definir que aquela classe exerce algum tipo de papel dentro do framework.Se vc quer q a classe seja um componente, voce utiliza @Component.
+
+Ex de diretiva de atributo:
+
+// arquivo ts
+
+// decorator
+@Directive({
+    selector: '[appRed]'
+})
+
+export class RedDirective{
+    constructor(el: ElementRef){
+        el.nativeElement.style.color = '#e35e6b'
+    }
+}
+
+// arquivo html
+<i class="material-icons v-middle" appRed>favorite</i>
+
+
+Ex de diretiva estrutural:
+
+<form *ngIf="product" class="product-form"></form>
+
+<ul>
+    <li *ngFor="let product of products">{{product.name}}</li>
+</ul>
+
+para criar diretiva: ng g d directives/nomeDiretiva
+
+
+15) Property Binding - comunicação com arquivo ts e html
+
+ex1: 
+
+HTML:
+
+<table [dataSource]="products"></table>
+
+TS:
+@Component({
+    selector: 'app-product-read',
+    templateUrl: './product-read.component.html',
+    styleUrls: ['./product-read.component.css']
+})
+
+export class ProductReadComponent implements OnInit {
+    products: Product[]
+}
+
+ex2: 
+<input [value]="nome" >
+
+no ts vamos ter nome: string;
+
+16) Event Binding
+
+HTML:
+<button (click)="createProduct()">Salvar</button>
+
+
+TS:
+@Component({
+    selector: 'app-product-create',
+    templateUrl: './product-create.component.html',
+    styleUrls: ['./product-create.component.css']
+})
+
+export class ProductCreateComponent implements OnInit {
+    createProduct():void {
+        ....
+    }
+}
+
+
+
+17) Two way data Binding:
+
+html:
+<input [(ngModel)]="nome">
+
+ts:
+nome: string;
+
+
+
+18) Router:
+
+<a routerLink="/products">Produtos</a>
+
+const routes: Routes = [
+    {
+        path: "products",
+        component: ProductCrudComponent
+    },
+
+     {
+        path: "products/create",
+        component: ProductCreateComponent
+    }
+]
+
+<mat-sidenav-content>
+    <router-outlet></router-outlet>
+</mat-sidenav-content>
+
+
+19) Pipes:
+
+<p>
+    o vencimento é
+    {{produto.vencimento | date}}
+</p>
+
+// pipe recebendo parametros
+<td *matCelDef="let product">
+    {{product.price | currency: 'BRL'}}
+</td>
+
+
+20) Padrão Observer: 
+    - padrao orientado a evento
+    - subject: qm tem capacidade de monitorar e detectar qd o evento ocorre
+    - observers: são os codigos que estao interessadas em determinado evento. Precisa ter um registro do observer interessado no subject.
+
+    callbacks => promises => observables (reusavel, stream dados, operadores)
+
+    Só existe programacao reativa a partir do padrao observer.
+
+    ex:
+
+    criarNoBackend(produto: Produto): Observable<Produto>{
+        return this.http.post<Produto>(this.url, produto)
+    }
+
+    criarProduto():void {
+        this.criarNoBackend(this.produto).subscribe(() => {
+            this.exibirMensagem("salvo com sucesso")
+        })
+    }
+
+    O observer que registramos é arrow function dentro do subscribe.
+
+
+21) Services: São classes que tem como principal objetivo organizar e compartilhar metodos e dados entre componentes, diretivas... para criar um service, usamos:
+ng g s services/product
+
+vamos usar os dados dentro do service a partir de injeção de dependencia.
+E vamos ter uma unica instancia da classe service em toda app.
+
+Para exportar um service para fora do modulo no app.module.ts temos que botar dentro de providers.
+
+22) Injeção de dependencia: É um padrao no ql a classe recebe as depedencias de uma fonte externa ao inves de criar por conta propria.
+
+Ex: temos service ProductService ele é instanciando pelo Angular, e qd referenciamos um componente ProductCreateComponent ele é instanciado e dentro dele é enviado o Product Service pela injecao de dependencia.
+
+Services são singletons (apenas uma única instancia) dentro do escopo de um injector.
+
+
+@Injectable({
+    providedIn: "root", // root é um alias para AppModule.
+})
+
+export class ProductService{
+    ....
+}
